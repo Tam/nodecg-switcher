@@ -1,0 +1,68 @@
+.switcher {
+	header {
+		border-color: @orange;
+
+		h5,
+		a {
+			color: @orange;
+		}
+
+		a:hover {
+			background: @orange;
+		}
+	}
+
+	&.panel:not(.settings) {
+		max-width: 620px;
+
+		.content {
+			display: flex;
+			flex-wrap: wrap;
+			padding-right: 0;
+			padding-bottom: 0;
+
+			a {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 130px;
+				height: 70px;
+				margin: 0 @spacer @spacer 0;
+
+				color: @white;
+				font-weight: @bold;
+				text-decoration: none !important;
+				text-align: center;
+
+				background: fade(@green, 10%);
+				border-radius: @border-radius;
+				border: 2px solid @green;
+				outline: none;
+
+				overflow: hidden;
+
+				transition: background 0.2s ease, box-shadow 0.2s ease;
+
+				&:hover {
+					background: @green;
+				}
+
+				&.active {
+					background: @green;
+					box-shadow: 0 2px 20px fade(@green, 50%);
+					cursor: default;
+				}
+			}
+
+			span {
+				display: inline-block;
+				width: 130px;
+				height: 70px;
+				margin: 0 @spacer @spacer 0;
+
+				background: @placeholder-tint;
+				border-radius: 5px;
+			}
+		}
+	}
+}

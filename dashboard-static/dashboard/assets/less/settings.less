@@ -1,0 +1,40 @@
+.settings {
+	&:extend(.panel all);
+
+	&-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+
+		display: flex;
+
+		background: fade(@dash-background, 80%);
+
+		opacity: 0;
+		pointer-events: none;
+
+		transition: opacity 0.5s ease;
+		transition-delay: 0.25s;
+
+		.settings {
+			margin: auto;
+
+			transform: scale(0);
+			transition: transform 0.5s ease;
+			transition-delay: 0s;
+		}
+
+		&.open-settings {
+			opacity: 1;
+			pointer-events: all;
+			transition-delay: 0s;
+
+			.settings {
+				transform: scale(1);
+				transition-delay: 0.2s;
+			}
+		}
+	}
+}
