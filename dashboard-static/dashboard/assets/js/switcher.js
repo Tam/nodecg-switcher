@@ -9,22 +9,11 @@
 			},
 			append: function (node) {
 				this.el.appendChild(node);
+			},
+			active: function () {
+				return this.el.getElementsByClassName('active')[0];
 			}
 		};
-
-	//var	scenes = SCENES_CONTAINER.querySelectorAll('a');
-	//
-	//// Scenes on click
-	//[].slice.call(scenes).forEach(function (el) {
-	//	el.addEventListener('click', function (e) {
-	//		e.preventDefault();
-	//
-	//		var currentActive = SCENES_CONTAINER.querySelector('.active');
-	//		if (currentActive) currentActive.classList.remove('active');
-	//
-	//		el.classList.add('active');
-	//	});
-	//});
 
 	/**
 	 * Helpers
@@ -39,7 +28,9 @@
 					else if (failCallback) failCallback();
 			};
 
-			request.onerror = failCallback;
+			request.onerror = function () {
+				if (failCallback) failCallback();
+			};
 
 			request.open('GET', url, true);
 			request.send();
@@ -77,17 +68,21 @@
 
 			return parseNode(raw);
 		},
-		// TODO: Fix this
 		addPlaceholders: function (sceneCount) {
-			var placeholderCount = (Math.ceil(sceneCount / 4) * 4) % sceneCount,
+			var placeholderCount = (sceneCount > 0) ? sceneCount % 4 : 4,
 				placeholder = document.createElement('span');
 			for (var i = 0; i < placeholderCount; i++) SCENES_CONTAINER.append(placeholder.cloneNode(false));
 		}
 	};
 
+	/**
+	 * vMix
+	 */
 	var vMix = {
 		scenes: {},
+		activeScene: '',
 		apiUrl: '127.0.0.1:8088',
+		hasConnection: false,
 		api: function (params, successCallback, failCallback) {
 			var urlParams = "";
 
@@ -102,49 +97,105 @@
 				urlParams = '?' + urlParams;
 			}
 
-			Helpers.get('http://' + vMix.apiUrl + '/api/' + urlParams, successCallback, failCallback);
+			Helpers.get('http://' + vMix.apiUrl + '/api/' + urlParams, successCallback, function () {
+				vMix.hasConnection = false;
+				failCallback();
+			});
 		},
-		switchScenes: function (newSceneId) {
-			console.log('Switching to %s', newSceneId);
+		checkConnection: function () {
+			vMix.api(null, function () {
+				vMix.hasConnection = true;
+				vMix.loop();
+			}, function () {
+				vMix.hasConnection = false;
+				setTimeout(vMix.checkConnection, 5000);
+			});
+		},
+		switchScenes: function (newSceneId, el) {
+			if (newSceneId !== vMix.activeScene) {
+				vMix.api({
+					'Function': 'Cut',
+					//'Duration': 0,
+					'Input': newSceneId
+				}, function () {
+					var currentActive = SCENES_CONTAINER.active();
+					if (currentActive) currentActive.classList.remove('active');
+
+					el.classList.add('active');
+
+					vMix.activeScene = newSceneId;
+				}, function () {
+					console.error('[Switcher]', 'Unable to switch scenes!');
+				});
+			}
 		},
 		updateScenes: function () {
 			this.api(null, function (res) {
-				var scenes = Helpers.parseXML(res).inputs,
-					scene = document.createElement('a'),
-					sceneCount = 0;
-				scene.setAttribute('href', '#');
-				scene.addEventListener('click', function (e) {
-					e.preventDefault();
-					console.dir(this);
-				});
+				var raw = Helpers.parseXML(res),
+					scenes = raw.inputs,
+					active = parseInt(raw.active.text),
+					sName = '',
+					vMixScenes = {};
 
-				SCENES_CONTAINER.clear();
+				for (sName in scenes) vMixScenes[sName] = scenes[sName];
 
-				for (var sName in scenes) {
-					var s = scenes[sName],
-						n = scene.cloneNode(false);
+				if (JSON.stringify(vMixScenes) !== JSON.stringify(vMix.scenes) ||
+					scenes[Object.keys(scenes)[active-1]].key !== vMix.activeScene) {
+					vMix.scenes = vMixScenes;
 
-					n.setAttribute('data-id', s.key);
-					n.innerText = s.title;
+					var scene = document.createElement('a'),
+						sceneCount = 0;
 
-					SCENES_CONTAINER.append(n);
+					scene.setAttribute('href', '#');
 
-					sceneCount++;
+					var clickEvent = function (el, key) {
+						el.addEventListener('click', function (e) {
+							e.preventDefault();
+							vMix.switchScenes(key, el);
+						}, true);
+					};
+
+					SCENES_CONTAINER.clear();
+
+					var i = 0;
+					for (sName in scenes) {
+						i++;
+
+						var s = scenes[sName],
+							n = scene.cloneNode(true);
+
+						n.setAttribute('data-id', s.key);
+						n.innerText = s.title;
+						clickEvent(n, s.key);
+						if (i === active) {
+							n.classList.add('active');
+							vMix.activeScene = s.key;
+						}
+
+						SCENES_CONTAINER.append(n);
+
+						sceneCount++;
+					}
+
+					Helpers.addPlaceholders(sceneCount);
 				}
-
-				Helpers.addPlaceholders(sceneCount);
 			}, function () {
+				SCENES_CONTAINER.clear();
+				Helpers.addPlaceholders(0);
 				console.error('[Switcher]', 'Unable to update vMix scenes!');
 			});
 		},
-		init: function () {
-			// TODO: Add connection check!
-			var checkForSceneChanges = function () {
+		loop: function () {
+			if (vMix.hasConnection) {
 				vMix.updateScenes();
 
-				setTimeout(checkForSceneChanges, 1000);
-			};
-			checkForSceneChanges();
+				setTimeout(vMix.loop, 1000);
+			} else {
+				vMix.checkConnection();
+			}
+		},
+		init: function () {
+			this.loop();
 		}
 	};
 
