@@ -2,7 +2,8 @@
 	"use strict";
 
 	// Globals
-	var SCENES_CONTAINER = {
+	var PANEL = document.getElementById('panelSwitcher'),
+		SCENES_CONTAINER = {
 			el: document.getElementById('scenes'),
 			clear: function () {
 				this.el.innerHTML = '';
@@ -12,6 +13,51 @@
 			},
 			active: function () {
 				return this.el.getElementsByClassName('active')[0];
+			}
+		},
+		ERROR = {
+			el: PANEL.getElementsByClassName('error')[0],
+			isVisible: false,
+			name: '',
+			show: function () {
+				var self = this;
+
+				if (this.el.classList.contains('visible')) {
+					this.hide();
+
+					setTimeout(function () {
+						self.el.classList.add('visible');
+					}, 250);
+				} else {
+					this.el.classList.add('visible');
+				}
+
+				setTimeout(function () {
+					self.hide();
+				}, 10000);
+
+				console.error('[Switcher]', this.el.innerText);
+				this.isVisible = true;
+
+				return this;
+			},
+			hide: function () {
+				this.el.classList.remove('visible');
+				this.isVisible = false;
+				this.name = '';
+				return this;
+			},
+			set: function (text, name) {
+				var self = this;
+
+				this.el.innerText = text;
+				if (name) this.name = name;
+
+				this.el.addEventListener('click', function () {
+					self.hide();
+				});
+
+				return this;
 			}
 		};
 
@@ -82,6 +128,7 @@
 		scenes: {},
 		activeScene: '',
 		apiUrl: '127.0.0.1:8088',
+		isInitialized: false,
 		hasConnection: false,
 		api: function (params, successCallback, failCallback) {
 			var urlParams = "";
@@ -105,10 +152,11 @@
 		checkConnection: function () {
 			vMix.api(null, function () {
 				vMix.hasConnection = true;
+				if (ERROR.name === 'vMixConnectionError') ERROR.hide();
 				vMix.loop();
 			}, function () {
 				vMix.hasConnection = false;
-				setTimeout(vMix.checkConnection, 5000);
+				if (vMix.isInitialized) setTimeout(vMix.checkConnection, 5000);
 			});
 		},
 		switchScenes: function (newSceneId, el) {
@@ -125,7 +173,8 @@
 
 					vMix.activeScene = newSceneId;
 				}, function () {
-					console.error('[Switcher]', 'Unable to switch scenes!');
+					if (ERROR.name !== 'vMixSceneSwitchError')
+						ERROR.set('Unable to switch scenes!', 'vMixSceneSwitchError').show();
 				});
 			}
 		},
@@ -182,23 +231,77 @@
 			}, function () {
 				SCENES_CONTAINER.clear();
 				Helpers.addPlaceholders(0);
-				console.error('[Switcher]', 'Unable to update vMix scenes!');
+				if (ERROR.name !== 'vMixSceneUpdateError' && vMix.hasConnection)
+					ERROR.set('Unable to update vMix scenes!', 'vMixSceneUpdateError').show();
 			});
 		},
 		loop: function () {
-			if (vMix.hasConnection) {
-				vMix.updateScenes();
+			if (vMix.isInitialized) {
+				if (vMix.hasConnection) {
+					vMix.updateScenes();
 
-				setTimeout(vMix.loop, 1000);
-			} else {
-				vMix.checkConnection();
+					setTimeout(vMix.loop, 1000);
+				} else {
+					vMix.checkConnection();
+					if (ERROR.name !== 'vMixConnectionError')
+						ERROR.set('Unable to connect to vMix!', 'vMixConnectionError').show();
+				}
 			}
 		},
 		init: function () {
+			this.isInitialized = true;
+			this.checkConnection();
 			this.loop();
+		},
+		terminate: function () {
+			this.isInitialized = false;
+			this.scenes = {};
+			this.activeScene = '';
+			ERROR.hide();
 		}
 	};
 
-	// TODO: Check settings to work out what software to target. Make switchable on the fly?
+	var obs = {
+		isInitialized: true,
+		init: function () {
+			this.isInitialized = true;
+			SCENES_CONTAINER.clear();
+			Helpers.addPlaceholders(0);
+		},
+		terminate: function () {
+			this.isInitialized = false;
+			ERROR.hide();
+		}
+	};
+
+	function nav () {
+		var n = PANEL.getElementsByTagName('nav')[0],
+			a = n.getElementsByTagName('a');
+
+		[].slice.call(a).forEach(function (el) {
+			el.addEventListener('click', function (e) {
+				e.preventDefault();
+
+				if (!el.classList.contains('active')) {
+					var active = n.getElementsByClassName('active')[0];
+					if (active) active.classList.remove('active');
+
+					el.classList.add('active');
+
+					switch (el.getAttribute('data-s')) {
+						case 'vmix':
+							obs.terminate();
+							vMix.init();
+							break;
+						case 'obs':
+							vMix.terminate();
+							obs.init();
+					}
+				}
+			});
+		});
+	}
+
+	nav();
 	vMix.init();
 })(window);

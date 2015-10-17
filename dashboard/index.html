@@ -10,7 +10,7 @@
 </head>
 <body>
 
-	<div class="panel switcher">
+	<div class="panel switcher" id="panelSwitcher">
 		<header>
 			<h5>Switcher</h5>
 			<div class="controls">
@@ -20,6 +20,13 @@
 				<a href="#" class="info"><i class="fa fa-info-circle"></i></a>
 			</div>
 		</header>
+
+		<nav>
+			<a href="#" data-s="vmix" class="active">vMix</a>
+			<a href="#" data-s="obs">OBS</a>
+		</nav>
+
+		<div class="error">Unable to connect to vMix!</div>
 
 		<div class="content" id="scenes">
 			<span class="placeholder"></span>

@@ -1,0 +1,38 @@
+{
+  "name": "nodecg-switcher",
+  "version": "0.0.5",
+  "description": "A scene / camera switcher for NodeCG that works with OBS & vMix!",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tam/nodecg-switcher"
+  },
+  "author": "Tam <hi@tam.sx>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Tam/nodecg-switcher/issues"
+  },
+  "homepage": "https://github.com/Tam/nodecg-switcher#readme",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-jshint": "^1.11.2",
+    "gulp-less": "^3.0.3",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.4.1",
+    "gulp-util": "^3.0.6",
+    "less-plugin-autoprefix": "^1.5.1",
+    "less-plugin-clean-css": "^1.5.1"
+  },
+  "nodecg": {
+    "compatibleRange": "~0.7.0",
+    "dashboardPanels": [
+      {
+        "name": "switcher",
+        "title": "Switcher",
+        "file": "index.html",
+        "width": 3,
+        "dialog": false,
+        "headerColor": "#ff6600"
+      }
+    ]
+  }
+}
