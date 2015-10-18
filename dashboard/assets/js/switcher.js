@@ -1,5 +1,5 @@
 (function (window) {
-	"use strict";
+	'use strict';
 
 	// Globals
 	var PANEL = document.getElementById('panelSwitcher'),
@@ -130,14 +130,15 @@
 		apiUrl: '127.0.0.1:8088',
 		isInitialized: false,
 		hasConnection: false,
+		activeTimeout: null,
 		api: function (params, successCallback, failCallback) {
-			var urlParams = "";
+			var urlParams = '';
 
 			if (params && params !== {}) {
 				for (var key in params) {
 					if (params.hasOwnProperty(key)) {
-						if (urlParams !== "") urlParams += "&";
-						urlParams += key + "=" + encodeURIComponent(params[key]);
+						if (urlParams !== '') urlParams += '&';
+						urlParams += key + '=' + encodeURIComponent(params[key]);
 					}
 				}
 
@@ -156,7 +157,7 @@
 				vMix.loop();
 			}, function () {
 				vMix.hasConnection = false;
-				if (vMix.isInitialized) setTimeout(vMix.checkConnection, 5000);
+				if (vMix.isInitialized) vMix.activeTimeout = setTimeout(vMix.checkConnection, 5000);
 			});
 		},
 		switchScenes: function (newSceneId, el) {
@@ -186,7 +187,7 @@
 					sName = '',
 					vMixScenes = {};
 
-				for (sName in scenes) vMixScenes[sName] = scenes[sName];
+				for (sName in scenes) if (scenes.hasOwnProperty(sName)) vMixScenes[sName] = scenes[sName];
 
 				if (JSON.stringify(vMixScenes) !== JSON.stringify(vMix.scenes) ||
 					scenes[Object.keys(scenes)[active-1]].key !== vMix.activeScene) {
@@ -208,22 +209,23 @@
 
 					var i = 0;
 					for (sName in scenes) {
-						i++;
+						if (scenes.hasOwnProperty(sName)) {
+							i++;
+							var s = scenes[sName],
+								n = scene.cloneNode(true);
 
-						var s = scenes[sName],
-							n = scene.cloneNode(true);
+							n.setAttribute('data-id', s.key);
+							n.innerText = s.title;
+							clickEvent(n, s.key);
+							if (i === active) {
+								n.classList.add('active');
+								vMix.activeScene = s.key;
+							}
 
-						n.setAttribute('data-id', s.key);
-						n.innerText = s.title;
-						clickEvent(n, s.key);
-						if (i === active) {
-							n.classList.add('active');
-							vMix.activeScene = s.key;
+							SCENES_CONTAINER.append(n);
+
+							sceneCount++;
 						}
-
-						SCENES_CONTAINER.append(n);
-
-						sceneCount++;
 					}
 
 					Helpers.addPlaceholders(sceneCount);
@@ -240,7 +242,7 @@
 				if (vMix.hasConnection) {
 					vMix.updateScenes();
 
-					setTimeout(vMix.loop, 1000);
+					vMix.activeTimeout = setTimeout(vMix.loop, 1000);
 				} else {
 					vMix.checkConnection();
 					if (ERROR.name !== 'vMixConnectionError')
@@ -257,6 +259,7 @@
 			this.isInitialized = false;
 			this.scenes = {};
 			this.activeScene = '';
+			clearTimeout(vMix.activeTimeout);
 			ERROR.hide();
 		}
 	};

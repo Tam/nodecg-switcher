@@ -29,7 +29,7 @@
         "name": "switcher",
         "title": "Switcher",
         "file": "index.html",
-        "width": 3,
+        "width": 5,
         "dialog": false,
         "headerColor": "#ff6600"
       }
