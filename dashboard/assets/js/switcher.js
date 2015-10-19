@@ -3,6 +3,7 @@
 
 	// Globals
 	var PANEL = document.getElementById('panelSwitcher'),
+		SETTINGS_MODAL = window.top.document.getElementById('nodecg-switcher_switcherSettings'),
 		SCENES_CONTAINER = {
 			el: document.getElementById('scenes'),
 			clear: function () {
@@ -312,16 +313,25 @@
 	}
 
 	/**
-	 * Settings
+	 * Panel
 	 */
-	var settings = {
-		el: window.top.document.getElementById('nodecg-switcher_switcherSettings'),
+	var panel = {
+		el: window.top.document.getElementById('nodecg-switcher_switcher'),
 		init: function () {
-			console.dir(this.el);
+			var button = window.top.document.createElement('paper-icon-button');
+			button.icon = 'settings';
+
+			button.addEventListener('click', function () {
+				SETTINGS_MODAL.open();
+			});
+
+			var infoButton = this.el.querySelector('paper-icon-button#infoBtn');
+			infoButton.parentNode.insertBefore(button, infoButton);
 		}
 	};
 
+	panel.init();
+
 	nav();
-	settings.init();
 	vMix.init();
 })(window);
