@@ -20,8 +20,9 @@
 			el: PANEL.getElementsByClassName('error')[0],
 			isVisible: false,
 			name: '',
-			show: function () {
+			show: function (timeout) {
 				var self = this;
+				timeout = timeout || 10000;
 
 				if (this.el.classList.contains('visible')) {
 					this.hide();
@@ -33,9 +34,11 @@
 					this.el.classList.add('visible');
 				}
 
-				setTimeout(function () {
-					self.hide();
-				}, 10000);
+				if (timeout !== -1) {
+					setTimeout(function () {
+						self.hide();
+					}, timeout);
+				}
 
 				console.error('[Switcher]', this.el.innerText);
 				this.isVisible = true;
@@ -238,7 +241,7 @@
 					ERROR.set('Unable to update vMix scenes!', 'vMixSceneUpdateError').show();
 			});
 		},
-		loop: function (isFirstRun) {
+		loop: function () {
 			if (vMix.isInitialized) {
 				if (vMix.hasConnection) {
 					vMix.updateScenes();
@@ -246,7 +249,10 @@
 					vMix.activeTimeout = setTimeout(vMix.loop, 1000);
 				} else {
 					vMix.checkConnection();
-					if (ERROR.name !== 'vMixConnectionError' && !isFirstRun)
+					SCENES_CONTAINER.clear();
+					Helpers.addPlaceholders(0);
+					console.log(ERROR);
+					if (ERROR.name !== 'vMixConnectionError')
 						ERROR.set('Unable to connect to vMix!', 'vMixConnectionError').show();
 				}
 			}
@@ -254,7 +260,7 @@
 		init: function () {
 			this.isInitialized = true;
 			this.checkConnection();
-			this.loop(true);
+			this.loop();
 		},
 		terminate: function () {
 			this.isInitialized = false;
@@ -284,33 +290,27 @@
 	/**
 	 * Nav
 	 */
-	function nav () {
-		var n = PANEL.getElementsByTagName('nav')[0],
-			a = n.getElementsByTagName('a');
-
-		[].slice.call(a).forEach(function (el) {
-			el.addEventListener('click', function (e) {
+	var nav = {
+		el: PANEL.getElementsByTagName('nav')[0],
+		items: {},
+		addItem: function (name, label, click) {
+			var a = document.createElement('a');
+			a.setAttribute('href', '#');
+			a.innerText = label;
+			a.addEventListener('click', function (e) {
 				e.preventDefault();
-
-				if (!el.classList.contains('active')) {
-					var active = n.getElementsByClassName('active')[0];
-					if (active) active.classList.remove('active');
-
-					el.classList.add('active');
-
-					switch (el.getAttribute('data-s')) {
-						case 'vmix':
-							obs.terminate();
-							vMix.init();
-							break;
-						case 'obs':
-							vMix.terminate();
-							obs.init();
-					}
-				}
+				click();
 			});
-		});
-	}
+			a.setActive = function () {
+				var currActive = nav.el.getElementsByClassName('active')[0];
+				if (currActive) currActive.classList.remove('active');
+				this.classList.add('active');
+			};
+
+			this.items[name] = a;
+			this.el.appendChild(a);
+		}
+	};
 
 	/**
 	 * Panel
@@ -330,8 +330,26 @@
 		}
 	};
 
-	panel.init();
+	/**
+	 * Init!
+	 */
+	function init() {
+		panel.init();
+		ERROR.set('No software enabled, please check settings!').show(-1);
 
-	nav();
-	vMix.init();
+		nav.addItem('vmix', 'vMix', function () {
+			nav.items.vmix.setActive();
+			vMix.init();
+			obs.terminate();
+		});
+		nav.addItem('obs', 'OBS', function () {
+			nav.items.obs.setActive();
+			vMix.terminate();
+			obs.init();
+		});
+
+		nav.items.obs.setActive();
+	}
+
+	init();
 })(window);

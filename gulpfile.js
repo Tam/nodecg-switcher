@@ -29,7 +29,7 @@ gulp.task('less', function () {
 
 // Watchers
 gulp.task('watch', function () {
-	gulp.watch(['dashboard/assets/js/*'], ['js']);
+	gulp.watch(['dashboard/assets/js/**/*.js', '!dashboard/assets/js/**/*.min.js'], ['js']);
 	gulp.watch(['dashboard/assets/less/*'], ['less']);
 });
 
