@@ -1,6 +1,6 @@
 {
   "name": "nodecg-switcher",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A scene / camera switcher for NodeCG that works with OBS & vMix!",
   "repository": {
     "type": "git",
@@ -31,7 +31,7 @@
         "file": "index.html",
         "width": 5,
         "dialog": false,
-        "headerColor": "#ff6600"
+        "headerColor": "#2b2b36"
       }
     ]
   }

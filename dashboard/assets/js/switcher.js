@@ -127,7 +127,7 @@
 	var vMix = {
 		scenes: {},
 		activeScene: '',
-		apiUrl: '127.0.0.1:8088',
+		apiUrl: '192.168.0.6:8088',
 		isInitialized: false,
 		hasConnection: false,
 		activeTimeout: null,
@@ -237,7 +237,7 @@
 					ERROR.set('Unable to update vMix scenes!', 'vMixSceneUpdateError').show();
 			});
 		},
-		loop: function () {
+		loop: function (isFirstRun) {
 			if (vMix.isInitialized) {
 				if (vMix.hasConnection) {
 					vMix.updateScenes();
@@ -245,7 +245,7 @@
 					vMix.activeTimeout = setTimeout(vMix.loop, 1000);
 				} else {
 					vMix.checkConnection();
-					if (ERROR.name !== 'vMixConnectionError')
+					if (ERROR.name !== 'vMixConnectionError' && !isFirstRun)
 						ERROR.set('Unable to connect to vMix!', 'vMixConnectionError').show();
 				}
 			}
@@ -253,7 +253,7 @@
 		init: function () {
 			this.isInitialized = true;
 			this.checkConnection();
-			this.loop();
+			this.loop(true);
 		},
 		terminate: function () {
 			this.isInitialized = false;

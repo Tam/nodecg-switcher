@@ -4,7 +4,6 @@
 
 	background: @panel-background;
 	box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.1);
-	border-radius: @border-radius;
 	box-sizing: content-box;
 
 	overflow: hidden;
@@ -75,8 +74,8 @@
 
 	.error {
 		position: absolute;
-		top: 13px;
-		left: 110px;
+		top: 8px;
+		right: @spacer;
 		padding: @spacer/3 @spacer/2;
 
 		color: @white;
@@ -90,21 +89,10 @@
 		opacity: 0;
 		pointer-events: none;
 		transform: scale(0);
-		transform-origin: -5px 50%;
+		transform-origin: 100% 50%;
 		transition: opacity 0.2s ease, transform 0.2s ease;
 
 		cursor: pointer;
-
-		&:before {
-			content: '';
-			position: absolute;
-			left: -10px;
-			top: 50%;
-			margin-top: -5px;
-
-			border: 5px solid transparent;
-			border-right-color: @red;
-		}
 
 		&.visible {
 			opacity: 1;
