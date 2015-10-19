@@ -264,6 +264,9 @@
 		}
 	};
 
+	/**
+	 * OBS
+	 */
 	var obs = {
 		isInitialized: true,
 		init: function () {
@@ -277,6 +280,9 @@
 		}
 	};
 
+	/**
+	 * Nav
+	 */
 	function nav () {
 		var n = PANEL.getElementsByTagName('nav')[0],
 			a = n.getElementsByTagName('a');
@@ -305,6 +311,17 @@
 		});
 	}
 
+	/**
+	 * Settings
+	 */
+	var settings = {
+		el: window.top.document.getElementById('nodecg-switcher_switcherSettings'),
+		init: function () {
+			console.dir(this.el);
+		}
+	};
+
 	nav();
+	settings.init();
 	vMix.init();
 })(window);
