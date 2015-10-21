@@ -32,13 +32,6 @@
         "width": 5,
         "dialog": false,
         "headerColor": "#2b2b36"
-      },
-      {
-        "name": "switcherSettings",
-        "title": "Switcher Settings",
-        "file": "settings.html",
-        "width": 3,
-        "dialog": true
       }
     ]
   }

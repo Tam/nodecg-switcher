@@ -1,3 +1,14 @@
+/*
+ ,
+ {
+ "name": "switcherSettings",
+ "title": "Switcher Settings",
+ "file": "settings.html",
+ "width": 3,
+ "dialog": true
+ }
+ */
+
 (function (window) {
 	'use strict';
 

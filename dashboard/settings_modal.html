@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Settings</title>
+</head>
+<body>
+
+<div id="nodecgSwitcherSettings" class="ncg-modal">
+	<style type="text/css" scoped>
+		.ncg-modal {
+			position: fixed;
+			z-index: 100;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+
+			display: flex;
+
+			background: rgba(0,0,0,0.8);
+		}
+
+		.outer {
+			margin: auto;
+			padding: 20px;
+
+			background: linear-gradient(45deg, #ff0400 0%, #ff6600 100%);
+			border-radius: 5px;
+			box-shadow: 0 0 75px rgba(255, 78, 0, 0.5);
+		}
+
+		.inner {
+			margin: 20px 0 20px -20px;
+			padding: 20px;
+			width: 100%;
+
+			background: #ffffff;
+			border-radius: 5px;
+			box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+
+			transform: translate3d(40px, 0, 0);
+		}
+
+		header {
+			display: flex;
+		}
+
+		footer {
+			display: flex;
+			justify-content: flex-end;
+		}
+
+		h3 {
+			margin: 0 100px 0 0;
+
+			font-size: 24px;
+			color: rgba(255,255,255,0.8);
+			font-weight: bold;
+		}
+
+		.close {
+			position: relative;
+			padding: 10px 15px;
+		}
+
+		.close:before,
+		.close:after {
+			content: '';
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			margin-top: -2px;
+			margin-left: -12.5px;
+
+			width: 25px;
+			height: 4px;
+
+			background: #FFFFFF;
+			border-radius: 2px;
+
+			transform: rotate(45deg);
+			transition: transform 0.3s ease;
+		}
+
+		.close:after {
+			transform: rotate(-45deg);
+		}
+
+		.close:hover:before {
+			transform: rotate(225deg);
+		}
+
+		.close:hover:after {
+			transform: rotate(-225deg);
+		}
+
+		.cancel,
+		.save {
+			padding: 15px 20px;
+
+			font-size: 16px;
+			font-weight: bold;
+
+			border: none;
+
+			cursor: pointer;
+		}
+
+		.cancel {
+			margin-right: 5px;
+
+			color: rgba(255,255,255,0.75);
+
+			background: none;
+
+			transition: color 0.2s ease;
+		}
+		.cancel:hover {
+			color: #FFFFFF;
+		}
+
+		.save {
+			color: #FFFFFF;
+
+			background: #05b10e;
+			background: linear-gradient(0deg, #05b10e 0%, #05c70e 100%);
+			border-radius: 3px;
+			box-shadow: inset 0 1px 1px rgba(255,255,255,0.3),
+			inset 0 -1px 1px rgba(0,0,0,0.2);
+		}
+	</style>
+
+	<div class="outer">
+
+		<header>
+			<h3>Switcher Settings</h3>
+
+			<a href="#" title="Cancel" class="close"></a>
+		</header>
+
+		<div class="inner">
+			Hello world!
+		</div>
+
+		<footer>
+			<button class="cancel">Cancel</button>
+			<button class="save">Save</button>
+		</footer>
+
+	</div>
+</div>
+
+</body>
+</html>

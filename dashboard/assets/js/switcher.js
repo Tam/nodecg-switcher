@@ -352,4 +352,18 @@
 	}
 
 	init();
+
+	// Settings
+	function settings() {
+		Helpers.get('settings_modal.html', function (data) {
+			data = data.replace(/(\r\n|\n|\r)/gm,'');
+
+			var parser = new DOMParser(),
+				doc = parser.parseFromString(data, 'text/html');
+
+			var modal = doc.body.firstChild;
+			window.top.document.body.appendChild(modal);
+		});
+	}
+	settings();
 })(window);
