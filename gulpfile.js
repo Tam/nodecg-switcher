@@ -27,10 +27,20 @@ gulp.task('less', function () {
 		.pipe(gulp.dest('dashboard/assets/css'));
 });
 
+// ncg-dash
+gulp.task('ncg-dash', function () {
+	gulp.src('dashboard/ncg-dash/style.less')
+		.pipe(less({
+			plugins: [autoprefixer, cleancss]
+		}).on('error', function(err){ console.log(err.message); }))
+		.pipe(gulp.dest('dashboard/ncg-dash'));
+});
+
 // Watchers
 gulp.task('watch', function () {
 	gulp.watch(['dashboard/assets/js/**/*.js', '!dashboard/assets/js/**/*.min.js'], ['js']);
 	gulp.watch(['dashboard/assets/less/*'], ['less']);
+	gulp.watch(['dashboard/ncg-dash/*', '!dashboard/ncg-dash/*.css'], ['ncg-dash']);
 });
 
 gulp.task('default', ['watch']);

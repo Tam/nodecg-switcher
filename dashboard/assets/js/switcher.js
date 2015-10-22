@@ -354,16 +354,21 @@
 	init();
 
 	// Settings
-	function settings() {
-		Helpers.get('settings_modal.html', function (data) {
-			data = data.replace(/(\r\n|\n|\r)/gm,'');
+	//function settings() {
+	//	Helpers.get('settings_modal.html', function (data) {
+	//		data = data.replace(/(\r\n|\n|\r)/gm,'');
+	//
+	//		var parser = new DOMParser(),
+	//			doc = parser.parseFromString(data, 'text/html');
+	//
+	//		var modal = doc.body.firstChild;
+	//		window.top.document.body.appendChild(modal);
+	//	});
+	//}
+	//settings();
 
-			var parser = new DOMParser(),
-				doc = parser.parseFromString(data, 'text/html');
-
-			var modal = doc.body.firstChild;
-			window.top.document.body.appendChild(modal);
-		});
-	}
-	settings();
+	var style = document.createElement('style');
+	style.type = 'text/css';
+	style.src = '/panel/nodecg-switcher/ncg-dash/style.css';
+	window.top.document.head.appendChild(style);
 })(window);
